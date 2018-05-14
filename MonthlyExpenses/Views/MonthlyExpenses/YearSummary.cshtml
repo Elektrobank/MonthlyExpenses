@@ -1,0 +1,53 @@
+﻿@model MonthlyExpenses.Models.YearSummaryViewModel
+@using MonthlyExpenses.Models
+
+@{
+    ViewBag.Title = "Index";
+
+}
+
+<div class="container">
+            <h2>@Model.Year</h2>
+            <h2 class="pull-left">@Model.Year</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th style="border-right: 2px solid #dee2e6">Expense</th>
+                @foreach (var month in Model.Months)
+                {
+                    <th style="width: 95px">@month</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Expenses)
+            {
+                var count = item.MonthlyAmountPaid.Count();
+                if (count < 12)
+                {
+                    for (var i = 0; i < (12 - count); i++)
+                    {
+                        var defaultAmount = new AmountPaid() { Amount = 0, Date = "2018-12-31".AsDateTime() };
+                        item.MonthlyAmountPaid.Add(defaultAmount);
+                    }
+                }
+
+                <tr>
+                    <td style="white-space:nowrap; border-right: 2px solid #dee2e6">@item.Name</td>
+
+                    @for (var i = 0; i < 12; i++)
+                    {
+                        if (i >= count)
+                        {
+                            <td></td>
+                        }
+                        else
+                        {
+                            <td>@item.MonthlyAmountPaid[i].Amount.ToString("C2")</td>
+                        }
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
