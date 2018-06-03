@@ -44,4 +44,11 @@ C:\Users\Electrobank\GitRepos\MonthlyExpenses\MonthlyExpenses\bin\System.Web.Hel
 C:\Users\Electrobank\GitRepos\MonthlyExpenses\MonthlyExpenses\bin\System.Web.Mvc.xml
 C:\Users\Electrobank\GitRepos\MonthlyExpenses\MonthlyExpenses\obj\Debug\MonthlyExpenses.dll
 C:\Users\Electrobank\GitRepos\MonthlyExpenses\MonthlyExpenses\obj\Debug\MonthlyExpenses.pdb
+C:\Users\Electrobank\GitRepos\MonthlyExpenses\MonthlyExpenses\bin\Antlr3.Runtime.dll
+C:\Users\Electrobank\GitRepos\MonthlyExpenses\MonthlyExpenses\bin\Newtonsoft.Json.dll
+C:\Users\Electrobank\GitRepos\MonthlyExpenses\MonthlyExpenses\bin\System.Web.Optimization.dll
+C:\Users\Electrobank\GitRepos\MonthlyExpenses\MonthlyExpenses\bin\WebGrease.dll
+C:\Users\Electrobank\GitRepos\MonthlyExpenses\MonthlyExpenses\bin\Antlr3.Runtime.pdb
+C:\Users\Electrobank\GitRepos\MonthlyExpenses\MonthlyExpenses\bin\Newtonsoft.Json.xml
+C:\Users\Electrobank\GitRepos\MonthlyExpenses\MonthlyExpenses\bin\System.Web.Optimization.xml
 C:\Users\Electrobank\GitRepos\MonthlyExpenses\MonthlyExpenses\obj\Debug\MonthlyExpenses.csprojResolveAssemblyReference.cache

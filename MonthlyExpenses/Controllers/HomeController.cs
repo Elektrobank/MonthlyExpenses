@@ -3,41 +3,44 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using MonthlyExpenses.Models;
+using MonthlyBills.Models;
 using NPoco;
 
-namespace MonthlyExpenses.Controllers
+
+namespace MonthlyBills.Controllers
 {
-    public class MonthlyExpensesController : Controller
+    public class MonthlyBillsController : Controller
     {
-        Database db = new Database("Finances");
-        public List<SqlModel> GetYearExpenses(string year)
+        static Database db = new Database("Finances");
+        public List<MonthlyExpenses> GetYearExpenses(int year)
         {
-            return db.Fetch<SqlModel>($"SELECT [Date] ,[Name] ,[Cost] ,[Category] FROM [Finances].[dbo].[MonthlyExpenses] WHERE YEAR(Date) = '{year}'");
+            return db.Fetch<MonthlyExpenses>($"SELECT [Date] ,[Name] ,[Cost] ,[Category] FROM [Finances].[dbo].[MonthlyExpenses] WHERE YEAR(Date) = '{year}'");
         }
 
-        public ActionResult Index()
+        public static List<ExpenseDueDates> GetExpenseDueDates()
         {
-            return View();
+            return db.Fetch<ExpenseDueDates>($"SELECT [Name], [DueDate] FROM [Finances].[dbo].[ExpenseDueDates]");
         }
 
-        [Route("{MonthlyExpenses}/{YearSummary}/{year}")]
-        public ActionResult YearSummary(string year)
+        List<ExpenseDueDates> dueDates = GetExpenseDueDates();
+
+        List<string> months = new List<string> {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+
+
+        [Route("MonthlyBills/YearSummary/{year?}")]
+        public ActionResult YearSummary(int year = 2018)
         {
             var vm = new YearSummaryViewModel();
             vm.Year = year;
+            vm.Months = months;
             var expenses = GetYearExpenses(year);
-            vm.Months = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 
-            foreach (var e in expenses.GroupBy(g => new
-            {
-                g.Name,
-                g.Category
-            }).ToList())
+            foreach (var e in expenses.GroupBy(g => new { g.Name, g.Category }).ToList())
             {
                 var currentExpense = new Expense();
                 currentExpense.Name = e.Key.Name;
                 currentExpense.Category = e.Key.Category;
+                currentExpense.DueDate = dueDates.Where(x => x.Name == e.Key.Name).Select(x => x.DueDate).First() ;
 
                 currentExpense.MonthlyAmountPaid = expenses
                     .Where(n => n.Name == e.Key.Name)
@@ -52,8 +55,23 @@ namespace MonthlyExpenses.Controllers
                 vm.Expenses.Add(currentExpense);
             }
 
-
             return View(vm);
         }
+
+        [HttpPost]
+        public ActionResult Update(DateTime date, string name, string category, double cost, int dueDate)
+        {
+            if (!dueDates.Any(n => n.Name == name))
+            {
+                var newExpenseDueDate = new ExpenseDueDates { Name = name, DueDate = dueDate };
+                db.Save(newExpenseDueDate);
+            }
+
+            //var formData = new MonthlyExpenses { Date = date, Name = name, Category = category, Cost = cost };
+            //db.Save(formData);
+
+            return RedirectToAction("YearSummary/" + date.Year);
+        }
+
     }
 }

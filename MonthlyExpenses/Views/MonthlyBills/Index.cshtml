@@ -1,0 +1,19 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="row">
+    <div class="col-xs-3">
+        <h2 class="text-center">Select Year</h2>
+        <div class="list-group">
+            <a href="YearSummary/@DateTime.Now.Year" class="list-group-item text-center">@DateTime.Now.Year.ToString()</a>
+            <a href="YearSummary/@DateTime.Now.AddYears(-1).Year.ToString()" class="list-group-item text-center">@DateTime.Now.AddYears(-1).Year.ToString()</a>
+            <a href="YearSummary/@DateTime.Now.AddYears(-2).Year.ToString()" class="list-group-item text-center">@DateTime.Now.AddYears(-2).Year.ToString()</a>
+            <a href="YearSummary/@DateTime.Now.AddYears(-3).Year.ToString()" class="list-group-item text-center">@DateTime.Now.AddYears(-3).Year.ToString()</a>
+            <a href="YearSummary/@DateTime.Now.AddYears(-4).Year.ToString()" class="list-group-item text-center">@DateTime.Now.AddYears(-4).Year.ToString()</a>
+            <a href="YearSummary/@DateTime.Now.AddYears(-5).Year.ToString()" class="list-group-item text-center">@DateTime.Now.AddYears(-5).Year.ToString()</a>
+        </div>
+    </div>
+</div>
+
