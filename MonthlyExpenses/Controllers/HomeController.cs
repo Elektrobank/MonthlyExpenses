@@ -61,14 +61,14 @@ namespace MonthlyBills.Controllers
         [HttpPost]
         public ActionResult Update(DateTime date, string name, string category, double cost, int dueDate)
         {
-            if (!dueDates.Any(n => n.Name == name))
-            {
-                var newExpenseDueDate = new ExpenseDueDates { Name = name, DueDate = dueDate };
-                db.Save(newExpenseDueDate);
-            }
+            //if (!dueDates.Any(n => n.Name == name))
+            //{
+            //    var newExpenseDueDate = new ExpenseDueDates { Name = name, DueDate = dueDate };
+            //    db.Save(newExpenseDueDate);
+            //}
 
-            //var formData = new MonthlyExpenses { Date = date, Name = name, Category = category, Cost = cost };
-            //db.Save(formData);
+            var formData = new MonthlyExpenses { Date = date, Name = name, Category = category, Cost = cost };
+            db.Save(formData);
 
             return RedirectToAction("YearSummary/" + date.Year);
         }

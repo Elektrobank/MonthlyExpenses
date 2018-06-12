@@ -8,7 +8,8 @@
     string categoryListJson = JsonConvert.SerializeObject(Model.Expenses.Select(x => new { x.Name, x.Category, x.DueDate }).Distinct().ToList(), Formatting.Indented);
 
 }
-<script type="text/javascript"> 
+<script type="text/javascript">
+
     function updateFields() {
         var name = document.getElementById('name').value;
         var categoryList = (@Html.Raw(categoryListJson));
@@ -35,57 +36,77 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th style="border-right: 2px solid #dee2e6">Expense (dd)</th>
+            <th style="border-right: 2px solid #dee2e6">Expense (due on)</th>
             @foreach (var month in Model.Months)
             {
-                <th style="width: 95px">@month</th>
+            <th style="width: 95px">@month</th>
             }
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model.Expenses.OrderBy(x => x.DueDate))
+        {
+        var count = item.MonthlyAmountPaid.Count();
+        if (count < 12)
+        {
+        for (var i = 0; i < (12 - count); i++)
+        {
+        var defaultAmount = new AmountPaid { Amount = 0, Date = new DateTime(Model.Year, 12, 31) };
+        item.MonthlyAmountPaid.Add(defaultAmount);
+        }
+        }
+
+        <tr>
+            <td style="white-space:nowrap; border-right: 2px solid #dee2e6">@item.Name (@item.DueDate)</td>
+
+            @for (var i = 0; i < 12; i++)
             {
-                var count = item.MonthlyAmountPaid.Count();
-                if (count < 12)
-                {
-                    for (var i = 0; i < (12 - count); i++)
-                    {
-                        var defaultAmount = new AmountPaid { Amount = 0, Date = new DateTime(Model.Year, 12, 31) };
-                        item.MonthlyAmountPaid.Add(defaultAmount);
-                    }
-                }
-
-                <tr>
-                    <td style="white-space:nowrap; border-right: 2px solid #dee2e6">@item.Name (@item.DueDate)</td>
-
-                    @for (var i = 0; i < 12; i++)
-                    {
-                        if (i >= count)
-                        {
-                            <td></td>
-                        }
-                        else
-                        {
-                            <td>@item.MonthlyAmountPaid[i].Amount.ToString("C2")</td>
-                        }
-                    }
-                </tr>
+            if (i >= count)
+            {
+            <td></td>
+            }
+            else
+            {
+            <td>@item.MonthlyAmountPaid[i].Amount.ToString("C2")</td>
+            }
+            }
+        </tr>
         }
     </tbody>
 </table>
 <hr />
+
+@*<div class="input-group">
+    <input type="text" class="form-control" aria-label="Text input with dropdown button">
+    <div class="input-group-append">
+        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</button>
+        <div class="dropdown-menu">
+            <a class="dropdown-item" href="#">Action</a>
+            <a class="dropdown-item" href="#">Another action</a>
+            <a class="dropdown-item" href="#">Something else here</a>
+            <div role="separator" class="dropdown-divider"></div>
+            <a class="dropdown-item" href="#">Separated link</a>
+        </div>
+    </div>
+</div>*@
+
 <h3>Update Expense</h3>
 <form action="/MonthlyBills/Update" method="post">
     <div class="form-group">
         <label for="name">Name</label>
-        <select class="form-control" name="name" id="name" onchange="updateFields()">
-            @{ var names = Model.Expenses.Select(x => x.Name).Distinct().ToList(); }
-            @foreach (var name in names)
-            {
-                <option>@name</option>
-            }
-            <option class="fa-italic">ADD NEW</option>
-        </select>
+        <div class="input-group">
+            <input type="text" class="form-control" name="name" id="name" onchange="updateFields()">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select </button>
+                <div class="dropdown-menu">
+                    @{ var names = Model.Expenses.Select(x => x.Name).Distinct().ToList(); }
+                    @foreach (var name in names)
+                    {
+                    <a class="dropdown-item" href="#">@name</a>
+                    }
+                </div>
+            </div>
+        </div>
     </div>
     <div class="form-group">
         <label for="date">Date</label>
@@ -101,9 +122,8 @@
             @{ var categories = Model.Expenses.Select(x => x.Category).Distinct().ToList(); }
             @foreach (var category in categories)
             {
-                <option>@category</option>
+            <option>@category</option>
             }
-            <option class="fa-italic">ADD NEW</option>
         </select>
     </div>
     <div class="form-group">
@@ -112,11 +132,5 @@
     </div>
     <button type="submit" class="btn btn-success" value="Submit">Add/Update</button>
     <button type="" class="btn btn-danger" value="">Delete</button>
+
 </form>
-
-<div id="hook">
-
-</div>
-
-
-
