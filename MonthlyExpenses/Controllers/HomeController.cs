@@ -14,7 +14,7 @@ namespace MonthlyBills.Controllers
         static Database db = new Database("Finances");
         public List<MonthlyExpenses> GetYearExpenses(int year)
         {
-            return db.Fetch<MonthlyExpenses>($"SELECT [Date] ,[Name] ,[Cost] ,[Category] FROM [Finances].[dbo].[MonthlyExpenses] WHERE YEAR(Date) = '{year}'");
+            return db.Fetch<MonthlyExpenses>($"SELECT [Date] ,[Name] ,[Amount] ,[Category] FROM [Finances].[dbo].[MonthlyExpenses] WHERE YEAR(Date) = '{year}'");
         }
 
         public static List<ExpenseDueDates> GetExpenseDueDates()
@@ -47,7 +47,7 @@ namespace MonthlyBills.Controllers
                     .Select(n => new AmountPaid()
                     {
                         Date = n.Date,
-                        Amount = n.Cost
+                        Amount = n.Amount
                     })
                     .OrderBy(n => n.Date)
                     .ToList();
@@ -59,7 +59,7 @@ namespace MonthlyBills.Controllers
         }
 
         [HttpPost]
-        public ActionResult Update(DateTime date, string name, string category, double cost, int dueDate)
+        public ActionResult Update(DateTime date, string name, string category, double amount, int dueDate)
         {
             //if (!dueDates.Any(n => n.Name == name))
             //{
@@ -67,7 +67,7 @@ namespace MonthlyBills.Controllers
             //    db.Save(newExpenseDueDate);
             //}
 
-            var formData = new MonthlyExpenses { Date = date, Name = name, Category = category, Cost = cost };
+            var formData = new MonthlyExpenses { Date = date, Name = name, Category = category, Amount = amount };
             db.Save(formData);
 
             return RedirectToAction("YearSummary/" + date.Year);

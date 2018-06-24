@@ -8,30 +8,17 @@
     string categoryListJson = JsonConvert.SerializeObject(Model.Expenses.Select(x => new { x.Name, x.Category, x.DueDate }).Distinct().ToList(), Formatting.Indented);
 
 }
-<script type="text/javascript">
 
-    function updateFields() {
-        var name = document.getElementById('name').value;
-        var categoryList = (@Html.Raw(categoryListJson));
-        for (var c in categoryList) {
-            if (categoryList[c].Name == name) {
-                document.getElementById('category').value = categoryList[c].Category;
-                document.getElementById('dueDate').value = categoryList[c].DueDate;
-            }
-        }
-
-    }
-
-</script>
-
-<h3>Monthly Expenses</h3>
-<div class="btn-group btn-group-sm">
-    <a class="btn btn-default" href="/MonthlyBills/YearSummary/@(Model.Year - 1)"><span class="fa fa-chevron-left"></span></a>
-    <button type="button" class="btn btn-default">@Model.Year</button>
-    <a class="btn btn-default" href="/MonthlyBills/YearSummary/@(Model.Year + 1)"><span class="fa fa-chevron-right"></span></a>
-</div>
-
-<br />
+<row>
+    <h3>
+        Monthly Expenses
+        <span class="btn-group btn-group-sm">
+                <a class="btn btn-default" href="/MonthlyBills/YearSummary/@(Model.Year - 1)"><span class="fa fa-chevron-left"></span></a>
+                <button type="button" class="btn btn-default">@Model.Year</button>
+                <a class="btn btn-default" href="/MonthlyBills/YearSummary/@(Model.Year + 1)"><span class="fa fa-chevron-right"></span></a>
+        </span>
+    </h3>
+</row>
 <br />
 <table class="table table-striped">
     <thead>
@@ -39,56 +26,42 @@
             <th style="border-right: 2px solid #dee2e6">Expense (due on)</th>
             @foreach (var month in Model.Months)
             {
-            <th style="width: 95px">@month</th>
+                <th style="width: 95px">@month</th>
             }
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model.Expenses.OrderBy(x => x.DueDate))
         {
-        var count = item.MonthlyAmountPaid.Count();
-        if (count < 12)
-        {
-        for (var i = 0; i < (12 - count); i++)
-        {
-        var defaultAmount = new AmountPaid { Amount = 0, Date = new DateTime(Model.Year, 12, 31) };
-        item.MonthlyAmountPaid.Add(defaultAmount);
-        }
-        }
+            var count = item.MonthlyAmountPaid.Count();
+            if (count < 12)
+            {
+                for (var i = 0; i < (12 - count); i++)
+                {
+                    var defaultAmount = new AmountPaid { Amount = 0, Date = new DateTime(Model.Year, 12, 31) };
+                    item.MonthlyAmountPaid.Add(defaultAmount);
+                }
+            }
 
-        <tr>
-            <td style="white-space:nowrap; border-right: 2px solid #dee2e6">@item.Name (@item.DueDate)</td>
+            <tr>
+                <td style="white-space:nowrap; border-right: 2px solid #dee2e6">@item.Name (@item.DueDate)</td>
 
-            @for (var i = 0; i < 12; i++)
-            {
-            if (i >= count)
-            {
-            <td></td>
-            }
-            else
-            {
-            <td>@item.MonthlyAmountPaid[i].Amount.ToString("C2")</td>
-            }
-            }
-        </tr>
+                @for (var i = 0; i < 12; i++)
+                {
+                    if (i >= count)
+                    {
+                        <td></td>
+                    }
+                    else
+                    {
+                        <td>@item.MonthlyAmountPaid[i].Amount.ToString("C2")</td>
+                    }
+                }
+            </tr>
         }
     </tbody>
 </table>
 <hr />
-
-@*<div class="input-group">
-    <input type="text" class="form-control" aria-label="Text input with dropdown button">
-    <div class="input-group-append">
-        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</button>
-        <div class="dropdown-menu">
-            <a class="dropdown-item" href="#">Action</a>
-            <a class="dropdown-item" href="#">Another action</a>
-            <a class="dropdown-item" href="#">Something else here</a>
-            <div role="separator" class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">Separated link</a>
-        </div>
-    </div>
-</div>*@
 
 <h3>Update Expense</h3>
 <form action="/MonthlyBills/Update" method="post">
@@ -98,11 +71,11 @@
             <input type="text" class="form-control" name="name" id="name" onchange="updateFields()">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select </button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu" id="nameDropdown">
                     @{ var names = Model.Expenses.Select(x => x.Name).Distinct().ToList(); }
                     @foreach (var name in names)
                     {
-                    <a class="dropdown-item" href="#">@name</a>
+                        <a class="dropdown-item">@name</a>
                     }
                 </div>
             </div>
@@ -114,23 +87,69 @@
     </div>
     <div class="form-group">
         <label for="dueDate">Due On</label>
-        <input type="number" class="form-control" name="dueDate" id="dueDate" value="8" />
+        <input type="number" class="form-control" name="dueDate" id="dueDate" value="" />
     </div>
     <div class="form-group">
         <label for="category">Category</label>
-        <select class="form-control" name="category" id="category">
-            @{ var categories = Model.Expenses.Select(x => x.Category).Distinct().ToList(); }
-            @foreach (var category in categories)
-            {
-            <option>@category</option>
-            }
-        </select>
+        <div class="input-group">
+            <input type="text" class="form-control" name="category" id="category">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select </button>
+                <div class="dropdown-menu" id="categoryDropdown">
+                    @{ var categories = Model.Expenses.Select(x => x.Category).Distinct().ToList(); }
+                    @foreach (var category in categories)
+                    {
+                        <a id="testDrop" class="dropdown-item">@category</a>
+                    }
+                </div>
+            </div>
+        </div>
     </div>
     <div class="form-group">
-        <label for="cost">Cost</label>
-        <input type="number" step="0.01" class="form-control" name="cost" id="cost" placeholder="Enter Cost" />
+        <label for="amount">Amount</label>
+        <input type="number" step="0.01" class="form-control" name="amount" id="amount" placeholder="Enter Amount" />
     </div>
     <button type="submit" class="btn btn-success" value="Submit">Add/Update</button>
     <button type="" class="btn btn-danger" value="">Delete</button>
 
 </form>
+
+
+<script type="text/javascript">
+
+    function updateFields() {
+        var name = document.getElementById('name').value;
+        var categoryList = (@Html.Raw(categoryListJson));
+        for (var c in categoryList) {
+            if (categoryList[c].Name == name) {
+                document.getElementById('category').value = categoryList[c].Category;
+                document.getElementById('dueDate').value = categoryList[c].DueDate;
+            }
+        }
+    }
+
+    window.onload = function() {
+        var name = document.getElementById('name');
+        var category = document.getElementById('category');
+
+        var nameAnchors = document.getElementById('nameDropdown').getElementsByTagName('a');
+        var categoryAnchors = document.getElementById('categoryDropdown').getElementsByTagName('a');
+
+        for (var i = 0; i < nameAnchors.length; i++) {
+            var anchor = nameAnchors[i];
+            anchor.onclick = function() {
+                name.value = (this.text);
+                updateFields();
+            }
+        }
+
+        for (var i = 0; i < categoryAnchors.length; i++) {
+            var anchor = categoryAnchors[i];
+            anchor.onclick = function () {
+                category.value = (this.text);
+            }
+        }
+    }
+
+
+</script>
