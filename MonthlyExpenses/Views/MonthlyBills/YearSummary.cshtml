@@ -6,16 +6,56 @@
     ViewBag.Title = Model.Year + " Yearly Expenses";
     var firstDayOfMonth = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
     string categoryListJson = JsonConvert.SerializeObject(Model.Expenses.Select(x => new { x.Name, x.Category, x.DueDate }).Distinct().ToList(), Formatting.Indented);
+}
 
+@section Scripts {
+<script type="text/javascript">
+    
+    function updateFields() {
+        var name = document.getElementById('name').value;
+        var categoryList = (@Html.Raw(categoryListJson));
+        for (var c in categoryList) {
+            if (categoryList[c].Name == name) {
+                document.getElementById('category').value = categoryList[c].Category;
+                document.getElementById('dueDate').value = categoryList[c].DueDate;
+            }
+        }
+    }
+
+    //updates text fields based on default window load values
+    window.onload = function() {
+        var name = document.getElementById('name');
+        var category = document.getElementById('category');
+
+        var nameAnchors = document.getElementById('nameDropdown').getElementsByTagName('a');
+        var categoryAnchors = document.getElementById('categoryDropdown').getElementsByTagName('a');
+
+        for (var i = 0; i < nameAnchors.length; i++) {
+            var anchor = nameAnchors[i];
+            anchor.onclick = function() {
+                name.value = (this.text);
+                updateFields();
+            }
+        }
+
+        for (var i = 0; i < categoryAnchors.length; i++) {
+            var anchor = categoryAnchors[i];
+            anchor.onclick = function () {
+                category.value = (this.text);
+            }
+        }
+    }
+
+</script>
 }
 
 <row>
     <h3>
         Monthly Expenses
         <span class="btn-group btn-group-sm">
-                <a class="btn btn-default" href="/MonthlyBills/YearSummary/@(Model.Year - 1)"><span class="fa fa-chevron-left"></span></a>
-                <button type="button" class="btn btn-default">@Model.Year</button>
-                <a class="btn btn-default" href="/MonthlyBills/YearSummary/@(Model.Year + 1)"><span class="fa fa-chevron-right"></span></a>
+            <a class="btn btn-default" href="/MonthlyBills/YearSummary/@(Model.Year - 1)"><span class="fa fa-chevron-left"></span></a>
+            <button type="button" class="btn btn-default">@Model.Year</button>
+            <a class="btn btn-default" href="/MonthlyBills/YearSummary/@(Model.Year + 1)"><span class="fa fa-chevron-right"></span></a>
         </span>
     </h3>
 </row>
@@ -114,42 +154,3 @@
 
 </form>
 
-
-<script type="text/javascript">
-
-    function updateFields() {
-        var name = document.getElementById('name').value;
-        var categoryList = (@Html.Raw(categoryListJson));
-        for (var c in categoryList) {
-            if (categoryList[c].Name == name) {
-                document.getElementById('category').value = categoryList[c].Category;
-                document.getElementById('dueDate').value = categoryList[c].DueDate;
-            }
-        }
-    }
-
-    window.onload = function() {
-        var name = document.getElementById('name');
-        var category = document.getElementById('category');
-
-        var nameAnchors = document.getElementById('nameDropdown').getElementsByTagName('a');
-        var categoryAnchors = document.getElementById('categoryDropdown').getElementsByTagName('a');
-
-        for (var i = 0; i < nameAnchors.length; i++) {
-            var anchor = nameAnchors[i];
-            anchor.onclick = function() {
-                name.value = (this.text);
-                updateFields();
-            }
-        }
-
-        for (var i = 0; i < categoryAnchors.length; i++) {
-            var anchor = categoryAnchors[i];
-            anchor.onclick = function () {
-                category.value = (this.text);
-            }
-        }
-    }
-
-
-</script>
