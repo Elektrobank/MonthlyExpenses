@@ -58,19 +58,22 @@ namespace MonthlyBills.Controllers
             return View(vm);
         }
 
+
         [HttpPost]
-        public ActionResult Update(DateTime date, string name, string category, double amount, int dueDate)
+        public ActionResult Update(DateTime date, string name, string category, double amount, int? dueDate)
         {
-            //if (!dueDates.Any(n => n.Name == name))
-            //{
-            //    var newExpenseDueDate = new ExpenseDueDates { Name = name, DueDate = dueDate };
-            //    db.Save(newExpenseDueDate);
-            //}
+            if (!dueDates.Any(n => n.Name == name))
+            {
+                var newExpenseDueDate = new ExpenseDueDates { Name = name, DueDate = dueDate };
+                db.Save(newExpenseDueDate);
+            }
 
             var formData = new MonthlyExpenses { Date = date, Name = name, Category = category, Amount = amount };
             db.Save(formData);
 
-            return RedirectToAction("YearSummary/" + date.Year);
+            var returnYear = date.Year > DateTime.Now.Year ? DateTime.Now.Year : date.Year;
+
+            return RedirectToAction("YearSummary/" + returnYear);
         }
 
     }

@@ -6,10 +6,10 @@ using NPoco;
 
 namespace MonthlyBills.Models
 {
-    [PrimaryKey("Name")]
+    [PrimaryKey("Name, DueDate")]
     public class ExpenseDueDates
     {
         public string Name { get; set; }
-        public int DueDate { get; set; }
+        public int? DueDate { get; set; }
     }
 }
