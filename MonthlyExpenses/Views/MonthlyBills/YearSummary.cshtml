@@ -1,6 +1,7 @@
 ﻿@model MonthlyBills.Models.YearSummaryViewModel
 @using MonthlyBills.Models
 @using Newtonsoft.Json;
+@using MonthlyBills;
 
 @{
     ViewBag.Title = Model.Year + " Yearly Expenses";
@@ -64,7 +65,7 @@
     <thead>
         <tr>
             <th style="border-right: 2px solid #dee2e6">Expense (due on)</th>
-            @foreach (var month in Model.Months)
+            @foreach (var month in Enum.GetValues(typeof(Global.Months)))
             {
                 <th style="width: 95px">@month</th>
             }
@@ -73,28 +74,17 @@
     <tbody>
         @foreach (var item in Model.Expenses.OrderBy(x => x.DueDate))
         {
-            var count = item.MonthlyAmountPaid.Count();
-            if (count < 12)
-            {
-                for (var i = 0; i < (12 - count); i++)
-                {
-                    var defaultAmount = new AmountPaid { Amount = 0, Date = new DateTime(Model.Year, 12, 31) };
-                    item.MonthlyAmountPaid.Add(defaultAmount);
-                }
-            }
-
             <tr>
                 <td style="white-space:nowrap; border-right: 2px solid #dee2e6">@item.Name (@item.DueDate)</td>
-
-                @for (var i = 0; i < 12; i++)
+                @foreach (int month in Enum.GetValues(typeof(Global.Months)))
                 {
-                    if (i >= count)
+                    if (item.MonthlyAmountPaid.Where(u => u.Date.Month == month).Any())
                     {
-                        <td></td>
+                        <td>@item.MonthlyAmountPaid.Where(u => u.Date.Month == month).Select(u => u.Amount).FirstOrDefault().ToString("C2")</td>
                     }
                     else
                     {
-                        <td>@item.MonthlyAmountPaid[i].Amount.ToString("C2")</td>
+                        <td></td>
                     }
                 }
             </tr>

@@ -23,16 +23,12 @@ namespace MonthlyBills.Controllers
         }
 
         List<ExpenseDueDates> dueDates = GetExpenseDueDates();
-
-        List<string> months = new List<string> {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-
-
+       
         [Route("MonthlyBills/YearSummary/{year?}")]
         public ActionResult YearSummary(int year = 2018)
         {
             var vm = new YearSummaryViewModel();
             vm.Year = year;
-            vm.Months = months;
             var expenses = GetYearExpenses(year);
 
             foreach (var e in expenses.GroupBy(g => new { g.Name, g.Category }).ToList())

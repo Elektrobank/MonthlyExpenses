@@ -9,6 +9,5 @@ namespace MonthlyBills.Models
     {
         public int Year { get; set; }
         public List<Expense> Expenses { get; set; } = new List<Expense>();
-        public List<string> Months { get; set; }
     }
 }
