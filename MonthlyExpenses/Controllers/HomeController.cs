@@ -17,12 +17,12 @@ namespace MonthlyBills.Controllers
             return db.Fetch<MonthlyExpenses>($"SELECT [Date] ,[Name] ,[Amount] ,[Category] FROM [Finances].[dbo].[MonthlyExpenses] WHERE YEAR(Date) = '{year}'");
         }
 
-        public static List<ExpenseDueDates> GetExpenseDueDates()
+        public static List<ExpenseDetails> GetExpenseDueDates()
         {
-            return db.Fetch<ExpenseDueDates>($"SELECT [Name], [DueDate] FROM [Finances].[dbo].[ExpenseDueDates]");
+            return db.Fetch<ExpenseDetails>($"SELECT * FROM [Finances].[dbo].[ExpenseDetails]");
         }
 
-        List<ExpenseDueDates> dueDates = GetExpenseDueDates();
+        List<ExpenseDetails> dueDates = GetExpenseDueDates();
        
         [Route("MonthlyBills/YearSummary/{year?}")]
         public ActionResult YearSummary(int year = 2018)
@@ -36,8 +36,9 @@ namespace MonthlyBills.Controllers
                 var currentExpense = new Expense();
                 currentExpense.Name = e.Key.Name;
                 currentExpense.Category = e.Key.Category;
-                currentExpense.DueDate = dueDates.Where(x => x.Name == e.Key.Name).Select(x => x.DueDate).First() ;
-
+                currentExpense.DueDate = dueDates.Where(x => x.Name == e.Key.Name).Select(x => x.DueDate).FirstOrDefault() ;
+                currentExpense.AutoPay = dueDates.Where(x => x.Name == e.Key.Name).Select(x => x.AutoPay).FirstOrDefault();
+                currentExpense.Icon = dueDates.Where(x => x.Name == e.Key.Name).Select(x => x.Icon).FirstOrDefault();
                 currentExpense.MonthlyAmountPaid = expenses
                     .Where(n => n.Name == e.Key.Name)
                     .Select(n => new AmountPaid()
@@ -60,7 +61,7 @@ namespace MonthlyBills.Controllers
         {
             if (!dueDates.Any(n => n.Name == name))
             {
-                var newExpenseDueDate = new ExpenseDueDates { Name = name, DueDate = dueDate };
+                var newExpenseDueDate = new ExpenseDetails { Name = name, DueDate = dueDate };
                 db.Save(newExpenseDueDate);
             }
 

@@ -317,7 +317,7 @@
     <Compile Include="Global.cs" />
     <Compile Include="Models\AmountPaid.cs" />
     <Compile Include="Models\Expense.cs" />
-    <Compile Include="Models\ExpenseDueDates.cs" />
+    <Compile Include="Models\ExpenseDetails.cs" />
     <Compile Include="Models\YearSummaryViewModel.cs" />
     <Compile Include="Models\MonthlyExpenses.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

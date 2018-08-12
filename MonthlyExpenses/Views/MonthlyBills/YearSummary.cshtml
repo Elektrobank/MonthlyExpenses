@@ -7,6 +7,7 @@
     ViewBag.Title = Model.Year + " Yearly Expenses";
     var firstDayOfMonth = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
     string categoryListJson = JsonConvert.SerializeObject(Model.Expenses.Select(x => new { x.Name, x.Category, x.DueDate }).Distinct().ToList(), Formatting.Indented);
+
 }
 
 @section Scripts {
@@ -49,25 +50,31 @@
 
     </script>
 }
-
 <row>
     <h3>
         Monthly Expenses
-        <span class="btn-group btn-group-sm">
-            <a class="btn btn-default" href="/MonthlyBills/YearSummary/@(Model.Year - 1)"><span class="fa fa-chevron-left"></span></a>
-            <button type="button" class="btn btn-default">@Model.Year</button>
-            <a class="btn btn-default" href="/MonthlyBills/YearSummary/@(Model.Year + 1)"><span class="fa fa-chevron-right"></span></a>
+        <span class="btn-group btn-group">
+            @if (Model.Year > 2008)
+            {
+                <a class="btn btn-outline-secondary" href="@Url.Action("YearSummary", new { year = Model.Year - 1})"><span style="color:gray" class="fa fa-chevron-left fa-2x"></span></a>
+            }
+            <button class="btn btn-outline-secondary active">@Model.Year</button>
+            @if (Model.Year < DateTime.Today.Year)
+            {
+                <a class="btn btn-outline-secondary" href="@Url.Action("YearSummary", new { year = Model.Year + 1})"><span style="color:gray" class="fa fa-chevron-right fa-2x"></span></a>
+            }
         </span>
     </h3>
-</row>
+</row> 
 <br />
 <table class="table table-striped">
     <thead>
         <tr>
-            <th style="border-right: 2px solid #dee2e6">Expense (due on)</th>
+            <th class="text-center" style="border-right: 2px solid #dee2e6">Expense (due on)</th>
+            <th class="text-center" style="border-right: 2px solid #dee2e6; width: 8%">YTD</th>
             @foreach (var month in Enum.GetValues(typeof(Global.Months)))
             {
-                <th style="width: 95px">@month</th>
+                <th class="text-center" style="width: 6.5%">@month</th>
             }
         </tr>
     </thead>
@@ -75,12 +82,13 @@
         @foreach (var item in Model.Expenses.OrderBy(x => x.DueDate))
         {
             <tr>
-                <td style="white-space:nowrap; border-right: 2px solid #dee2e6">@item.Name (@item.DueDate)</td>
+                <td style="white-space:nowrap; border-right: 2px solid #dee2e6"><span class="@item.Icon"></span> @item.Name (@item.DueDate) <span class = "@(item.AutoPay ? "fa fa-refresh" : ""  )"></span></td>
+                <td class="text-center align-middle" style="white-space:nowrap; border-right: 2px solid #dee2e6">@item.MonthlyAmountPaid.Select(u => u.Amount).Sum().ToString("C2")</td>
                 @foreach (int month in Enum.GetValues(typeof(Global.Months)))
                 {
                     if (item.MonthlyAmountPaid.Where(u => u.Date.Month == month).Any())
                     {
-                        <td>@item.MonthlyAmountPaid.Where(u => u.Date.Month == month).Select(u => u.Amount).FirstOrDefault().ToString("C2")</td>
+                        <td class="text-center align-middle">@item.MonthlyAmountPaid.Where(u => u.Date.Month == month).Select(u => u.Amount).FirstOrDefault().ToString("C2")</td>
                     }
                     else
                     {
